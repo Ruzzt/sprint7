@@ -61,7 +61,7 @@ func TestCafeCount(t *testing.T) {
 		{0, 0},
 		{1, 1},
 		{2, 2},
-		{100, min(len(cafeList[city]), 100)},
+		{100, len(cafeList[city])},
 	}
 	for _, v := range requests {
 		url := "/cafe?city=" + city + "&count=" + strconv.Itoa(v.count)
@@ -74,10 +74,11 @@ func TestCafeCount(t *testing.T) {
 		body := res.Body.String()
 		if body == "" {
 			assert.Equal(t, 0, v.want, "ожидается пустой ответ")
-		} else {
-			cafes := strings.Split(body, ", ")
-			assert.Equal(t, v.want, len(cafes), "неверное количество кафе в ответе")
+			continue
 		}
+
+		cafes := strings.Split(body, ",")
+		assert.Equal(t, v.want, len(cafes), "неверное количество кафе в ответе")
 
 	}
 
@@ -114,7 +115,8 @@ func TestCafeSearch(t *testing.T) {
 			continue
 		}
 
-		cafes := strings.Split(body, ", ")
+		cafes := strings.Split(body, ",")
+
 		assert.Equal(t, v.wantCount, len(cafes), "неверное количество кафе")
 
 		searchLower := strings.ToLower(v.search)
@@ -122,6 +124,5 @@ func TestCafeSearch(t *testing.T) {
 			nameLower := strings.ToLower(name)
 			assert.Contains(t, nameLower, searchLower, "название должно содержать подстроку поиска")
 		}
-
 	}
 }
